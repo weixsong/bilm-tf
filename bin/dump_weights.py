@@ -1,9 +1,6 @@
-
-
 import argparse
 
 from bilm.training import dump_weights as dw
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -12,4 +9,3 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     dw(args.save_dir, args.outfile)
-

@@ -1,4 +1,3 @@
-
 import unittest
 import os
 import json
@@ -60,7 +59,7 @@ class TestBidirectionalLanguageModel(unittest.TestCase):
         weight_file = os.path.join(FIXTURES, 'lm_weights.hdf5')
         character_ids = tf.placeholder('int32', (None, None, 50))
         model = BidirectionalLanguageModel(options_file, weight_file,
-            max_batch_size=4)
+                                           max_batch_size=4)
 
         # get the ops to compute embeddings
         ops = model(character_ids)
@@ -221,4 +220,3 @@ class TestBidirectionalLanguageModelTokenInput(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

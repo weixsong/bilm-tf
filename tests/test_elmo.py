@@ -1,4 +1,3 @@
-
 import unittest
 import os
 import json
@@ -11,7 +10,6 @@ from bilm.data import Batcher
 from bilm.elmo import weight_layers
 
 FIXTURES = 'tests/fixtures/model/'
-
 
 
 class TestWeightedLayers(unittest.TestCase):
@@ -37,9 +35,9 @@ class TestWeightedLayers(unittest.TestCase):
 
         weighted_ops = []
         for k in range(2):
-            ops = weight_layers(str(k), bilm_ops, l2_coef=l2_coef, 
-                                     do_layer_norm=do_layer_norm,
-                                     use_top_only=use_top_only)
+            ops = weight_layers(str(k), bilm_ops, l2_coef=l2_coef,
+                                do_layer_norm=do_layer_norm,
+                                use_top_only=use_top_only)
             weighted_ops.append(ops)
 
         # initialize
@@ -91,7 +89,7 @@ class TestWeightedLayers(unittest.TestCase):
         # Now compute the actual weighted layers
         for k in range(2):
             normed_weights = np.exp(weights[k][0] + 1.0 / 3) / np.sum(
-                                  np.exp(weights[k][0] + 1.0 / 3))
+                np.exp(weights[k][0] + 1.0 / 3))
             # masked layer normalization
             expected_elmo = np.zeros((3, 4, lm_embeddings.shape[-1]))
             if not use_top_only:
@@ -100,11 +98,11 @@ class TestWeightedLayers(unittest.TestCase):
                         mean = np.mean(lm_embeddings[:, j, :, :][mask])
                         std = np.std(lm_embeddings[:, j, :, :][mask])
                         normed_lm_embed = (lm_embeddings[:, j, :, :] - mean) / (
-                            std + 1E-12)
+                                std + 1E-12)
                         expected_elmo += normed_weights[j] * normed_lm_embed
                     else:
                         expected_elmo += normed_weights[j] * lm_embeddings[
-                                                                    :, j, :, :]
+                                                             :, j, :, :]
             else:
                 expected_elmo += lm_embeddings[:, -1, :, :]
 
@@ -126,5 +124,3 @@ class TestWeightedLayers(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
-

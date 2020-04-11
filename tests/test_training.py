@@ -1,5 +1,3 @@
-
-
 import unittest
 import os
 import shutil
@@ -9,10 +7,11 @@ import tensorflow as tf
 import numpy as np
 
 from bilm.training import train, test, load_vocab, \
-                                load_options_latest_checkpoint
+    load_options_latest_checkpoint
 from bilm.data import LMDataset, BidirectionalLMDataset
 
 FIXTURES = 'tests/fixtures/train/'
+
 
 class TestLanguageModel(unittest.TestCase):
     def tearDown(self):
@@ -58,9 +57,9 @@ class TestLanguageModel(unittest.TestCase):
 
         if use_chars:
             options['char_cnn'] = {
-               'n_characters': 261,
-               'max_characters_per_token': 10,
-               'filters': [
+                'n_characters': 261,
+                'max_characters_per_token': 10,
+                'filters': [
                     [1, 8],
                     [2, 8],
                     [3, 16],
@@ -149,4 +148,3 @@ class TestLanguageModel(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
