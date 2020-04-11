@@ -1,5 +1,5 @@
 # weso
-Tensorflow version is too old, need to update the code to make it runable for tf1.15
+Tensorflow version is too old, need to update the code to make it runable for tf1.15.
 
 # bilm-tf
 Tensorflow implementation of the pretrained biLM used to compute ELMo

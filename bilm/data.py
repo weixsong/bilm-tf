@@ -267,7 +267,14 @@ class TokenBatcher(object):
 
 ##### for training
 def _get_batch(generator, batch_size, num_steps, max_word_length):
-    """Read batches of input."""
+    """
+    Read batches of input.
+    :param generator:  iterator, return a sentence's ids & char_ids, ids is [4,21,2], char_ids is S_len*50, [[]]
+    :param batch_size:
+    :param num_steps:
+    :param max_word_length:
+    :return:
+    """
     cur_stream = [None] * batch_size
 
     no_more_data = False
