@@ -51,7 +51,6 @@ with tf.variable_scope('', reuse=True):
         'output', question_embeddings_op, l2_coef=0.0
     )
 
-
 # Now we can compute embeddings.
 raw_context = [
     'Pretrained biLMs compute representations useful for NLP tasks .',
@@ -76,4 +75,3 @@ with tf.Session() as sess:
         feed_dict={context_character_ids: context_ids,
                    question_character_ids: question_ids}
     )
-
