@@ -12,6 +12,7 @@ class Vocabulary(object):
     A token vocabulary.  Holds a map from token to ids and provides
     a method for encoding text to a sequence of ids.
     '''
+
     def __init__(self, filename, validate_file=False):
         '''
         filename = the vocabulary file.  It is a flat text file with one
@@ -113,6 +114,7 @@ class UnicodeCharsVocabulary(Vocabulary):
     then be sure to add the +1 appropriately, otherwise embeddings computed
     from the pre-trained model will be useless.
     """
+
     def __init__(self, filename, max_word_length, **kwargs):
         super(UnicodeCharsVocabulary, self).__init__(filename, **kwargs)
         self._max_word_length = max_word_length
@@ -123,12 +125,12 @@ class UnicodeCharsVocabulary(Vocabulary):
         self.eos_char = 257  # <end sentence>
         self.bow_char = 258  # <begin word>
         self.eow_char = 259  # <end word>
-        self.pad_char = 260 # <padding>
+        self.pad_char = 260  # <padding>
 
         num_words = len(self._id_to_word)
 
         self._word_char_ids = np.zeros([num_words, max_word_length],
-            dtype=np.int32)
+                                       dtype=np.int32)
 
         # the charcter representation of the begin/end of sentence characters
         def _make_bos_eos(c):
@@ -138,6 +140,7 @@ class UnicodeCharsVocabulary(Vocabulary):
             r[1] = c
             r[2] = self.eow_char
             return r
+
         self.bos_chars = _make_bos_eos(self.bos_char)
         self.eos_chars = _make_bos_eos(self.eos_char)
 
@@ -160,7 +163,7 @@ class UnicodeCharsVocabulary(Vocabulary):
         code = np.zeros([self.max_word_length], dtype=np.int32)
         code[:] = self.pad_char
 
-        word_encoded = word.encode('utf-8', 'ignore')[:(self.max_word_length-2)]
+        word_encoded = word.encode('utf-8', 'ignore')[:(self.max_word_length - 2)]
         code[0] = self.bow_char
         for k, chr_id in enumerate(word_encoded, start=1):
             code[k] = chr_id
@@ -180,10 +183,10 @@ class UnicodeCharsVocabulary(Vocabulary):
         '''
         if split:
             chars_ids = [self.word_to_char_ids(cur_word)
-                     for cur_word in sentence.split()]
+                         for cur_word in sentence.split()]
         else:
             chars_ids = [self.word_to_char_ids(cur_word)
-                     for cur_word in sentence]
+                         for cur_word in sentence]
         if reverse:
             return np.vstack([self.eos_chars] + chars_ids + [self.bos_chars])
         else:
@@ -194,6 +197,7 @@ class Batcher(object):
     ''' 
     Batch sentences of tokenized text into character id matrices.
     '''
+
     def __init__(self, lm_vocab_file: str, max_token_length: int):
         '''
         lm_vocab_file = the language model vocabulary file (one line per
@@ -233,6 +237,7 @@ class TokenBatcher(object):
     ''' 
     Batch sentences of tokenized text into token id matrices.
     '''
+
     def __init__(self, lm_vocab_file: str):
         '''
         lm_vocab_file = the language model vocabulary file (one line per
@@ -270,7 +275,7 @@ def _get_batch(generator, batch_size, num_steps, max_word_length):
         inputs = np.zeros([batch_size, num_steps], np.int32)
         if max_word_length is not None:
             char_inputs = np.zeros([batch_size, num_steps, max_word_length],
-                                np.int32)
+                                   np.int32)
         else:
             char_inputs = None
         targets = np.zeros([batch_size, num_steps], np.int32)
@@ -293,8 +298,8 @@ def _get_batch(generator, batch_size, num_steps, max_word_length):
                 inputs[i, cur_pos:next_pos] = cur_stream[i][0][:how_many]
                 if max_word_length is not None:
                     char_inputs[i, cur_pos:next_pos] = cur_stream[i][1][
-                                                                    :how_many]
-                targets[i, cur_pos:next_pos] = cur_stream[i][0][1:how_many+1]
+                                                       :how_many]
+                targets[i, cur_pos:next_pos] = cur_stream[i][0][1:how_many + 1]
 
                 cur_pos = next_pos
 
@@ -308,9 +313,10 @@ def _get_batch(generator, batch_size, num_steps, max_word_length):
             break
 
         X = {'token_ids': inputs, 'tokens_characters': char_inputs,
-                 'next_token_id': targets}
+             'next_token_id': targets}
 
         yield X
+
 
 class LMDataset(object):
     """
@@ -319,6 +325,7 @@ class LMDataset(object):
     A dataset is a list of tokenized files.  Each file contains one sentence
         per line.  Each sentence is pre-tokenized and white space joined.
     """
+
     def __init__(self, filepattern, vocab, reverse=False, test=False,
                  shuffle_on_load=False):
         '''
@@ -396,7 +403,7 @@ class LMDataset(object):
                for sentence in sentences]
         if self._use_char_inputs:
             chars_ids = [self.vocab.encode_chars(sentence, self._reverse)
-                     for sentence in sentences]
+                         for sentence in sentences]
         else:
             chars_ids = [None] * len(ids)
 
@@ -421,8 +428,7 @@ class LMDataset(object):
 
     def iter_batches(self, batch_size, num_steps):
         for X in _get_batch(self.get_sentence(), batch_size, num_steps,
-                           self.max_word_length):
-
+                            self.max_word_length):
             # token_ids = (batch_size, num_steps)
             # char_inputs = (batch_size, num_steps, 50) of character ids
             # targets = word ID of next word (batch_size, num_steps)
@@ -431,6 +437,7 @@ class LMDataset(object):
     @property
     def vocab(self):
         return self._vocab
+
 
 class BidirectionalLMDataset(object):
     def __init__(self, filepattern, vocab, test=False, shuffle_on_load=False):
@@ -448,11 +455,11 @@ class BidirectionalLMDataset(object):
         max_word_length = self._data_forward.max_word_length
 
         for X, Xr in zip(
-            _get_batch(self._data_forward.get_sentence(), batch_size,
-                      num_steps, max_word_length),
-            _get_batch(self._data_reverse.get_sentence(), batch_size,
-                      num_steps, max_word_length)
-            ):
+                _get_batch(self._data_forward.get_sentence(), batch_size,
+                           num_steps, max_word_length),
+                _get_batch(self._data_reverse.get_sentence(), batch_size,
+                           num_steps, max_word_length)
+        ):
 
             for k, v in Xr.items():
                 X[k + '_reverse'] = v
@@ -462,4 +469,3 @@ class BidirectionalLMDataset(object):
 
 class InvalidNumberOfCharacters(Exception):
     pass
-
