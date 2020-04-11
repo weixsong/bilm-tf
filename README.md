@@ -1,5 +1,7 @@
 # weso
-Tensorflow version is too old, need to update the code to make it runable for tf1.15.
+This is just a fork of [ELMo Tensorflow Implementation](https://github.com/allenai/bilm-tf), the original repo is too old
+, so I update some tensorflow api to make it runnable with tf1.15, and reformat the code.
+
 
 # bilm-tf
 Tensorflow implementation of the pretrained biLM used to compute ELMo
